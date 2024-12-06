@@ -7,3 +7,5 @@ Document processing
 Getting confirmation results.
 Vendors can save a lot of time. This application makes the evaluation process to complete within the assigned date.
 Different vendors with provides different Bids among which some selected bids can be approved
+
+for the entire project/source code contact : tausifsayyadtms@gmail.com
