@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@page
-	import="java.sql.*, java.lang.Integer,com.hit.beans.NoticeBean,com.hit.utility.DBUtil,java.util.List,java.util.ArrayList,com.hit.dao.NoticeDaoImpl,com.hit.dao.NoticeDao, javax.servlet.annotation.WebServlet"
+	import="java.sql.*,com.hit.dao.BidderDao,com.hit.dao.BidderDaoImpl, java.lang.Integer,com.hit.beans.BidderBean,com.hit.utility.DBUtil,java.util.List,java.util.ArrayList,com.hit.dao.TenderDaoImpl,com.hit.dao.TenderDao, javax.servlet.annotation.WebServlet"
 	errorPage="errorpage.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
@@ -29,7 +29,7 @@ th, tr {
 }
 
 td {
-	min-width: 145px;
+	min-width: 115px;
 	border: 2px dashed black;
 }
 
@@ -62,6 +62,26 @@ button:hover {
 	background-color: red;
 	color: white;
 	font-size: bold;
+}
+
+#bt1:hover {
+	background-color: green;
+	color: white;
+}
+
+#show {
+	text-align: center;
+	border-radius: 10px;
+	border: 1px red solid;
+	text-align: center;
+	background-color: cyan;
+	margin: 10px;
+	margin-left:30px;
+	color: black;
+	font-style: normal;
+	font-size: 15.5px;
+	padding: 12px;
+	width: 100%;
 }
 </style>
 </head>
@@ -121,42 +141,68 @@ button:hover {
         &nbsp; <span id="pagetitle">Admin Account</span></h4>pagetitle id is given here
         <div class="marquee-content" style="align:center; padding-top:200px;min-height:750px;background-color:cyan">
      		 -->
-			<table style="border-radius: 10px">
-				<tr>
-					<td id="show"
-						style="min-width: 850px; color: green; background-color: white">Delete
-						Notices</td>
-				</tr>
-			</table>
+
+
+			<div id="show">
+				Tender Bids For TendorId:
+				<%=request.getParameter("tid")%></div>
+
 
 
 			<table style="background-color: white">
 				<tr
-					style="color: white; font-size: 22px; font-weight: bold; background-color: #660033">
-					<td>Notice Id</td>
-					<td>Title</td>
-					<td>Description</td>
-					<td>Remove ?</td>
+					style="color: white; font-size: 18px; font-weight: bold; background-color: #660033">
+					<td>Bidder Id</td>
+					<td>Vendor Id</td>
+					<td>Bid Amount</td>
+					<td>Deadline</td>
+					<td>Status</td>
+					<td>Accept</td>
+					<td>Reject</td>
 				</tr>
 				<%
-				NoticeDao dao = new NoticeDaoImpl();
-				List<NoticeBean> noticeList = dao.viewAllNotice();
+				BidderDao dao = new BidderDaoImpl();
 
-				for (NoticeBean notice : noticeList) {
+				List<BidderBean> bidderList = dao.getAllBidsOfaTender(request.getParameter("tid"));
+				boolean isPending = false;
+				for (BidderBean bidder : bidderList) {
 
-					int noticeId = notice.getNoticeId();
+					isPending = false;
 
-					String noticeTitle = notice.getNoticeTitle();
+					String status = bidder.getBidStatus();
 
-					String noticeDesc = notice.getNoticeInfo();
+					if (status.equalsIgnoreCase("pending"))
+						isPending = true;
 				%>
 
+
 				<tr>
-					<td><%=noticeId%></td>
-					<td><%=noticeTitle%></td>
-					<td cols="70"><%=noticeDesc%></td>
-					<td><a href="RemoveNoticeSrv?noticeid=<%=noticeId%>"><button
-								class="btn btn-danger">Remove</button></a></td>
+					<td><%=bidder.getBidId()%></td>
+					<td><a
+						href="adminViewVendorDetail.jsp?vid=<%=bidder.getVendorId()%>"><%=bidder.getVendorId()%></a></td>
+					<td><%=bidder.getBidAmount()%></td>
+					<td><%=bidder.getBidDeadline()%></td>
+					<td><%=bidder.getBidStatus()%></td>
+
+					<%
+					if (isPending) {
+					%>
+
+					<td><a
+						href="AcceptBidSrv?bid=<%=bidder.getBidId()%>&tid=<%=bidder.getTenderId()%>&vid=<%=bidder.getVendorId()%>"><button
+								class="btn btn-success">Accept</button></a></td>
+					<td><a
+						href="RejectBidSrv?bid=<%=bidder.getBidId()%>&tid=<%=bidder.getTenderId()%>&vid=<%=bidder.getVendorId()%>"><button class="btn btn-danger">Reject</button></a></td>
+
+					<%
+					} else {
+					%>
+
+					<td><button class="btn btn-success" disabled><%=status%></button></td>
+					<td><button class="btn btn-danger" disabled><%=status%></button></td>
+					<%
+					}
+					%>
 				</tr>
 
 
@@ -165,7 +211,6 @@ button:hover {
 				}
 				%>
 			</table>
-
 
 			<!-- </div>
      </div> -->

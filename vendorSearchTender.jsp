@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
- <%@page import="java.sql.*,java.lang.Integer,java.lang.String, com.hit.beans.TenderStatusBean,com.hit.utility.DBUtil,java.util.List,com.hit.dao.TenderDaoImpl,com.hit.dao.TenderDao, javax.servlet.annotation.WebServlet" errorPage="errorpage.jsp"%>
+ <%@page import="java.sql.*,java.lang.Integer,java.lang.String, com.hit.beans.TenderBean,com.hit.utility.DBUtil,java.util.List,com.hit.dao.TenderDaoImpl,com.hit.dao.TenderDao, javax.servlet.annotation.WebServlet" errorPage="errorpage.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
   <head>
@@ -30,7 +30,7 @@
     	min-width:145px;
     	border: 2px dashed black;
     }
- table{
+    table{
     	text-align:center;
     	border-radius:10px;
 		border:1px red solid;
@@ -39,57 +39,49 @@
 		margin:20px;
 		color:blue;
 		font-style:normal;
-		font-size: 15.5px;
+		font-size: 15px;
 		padding:20px;
 		cellpadding:10;
 		cellspacing:10;
     }
-    tr:hover{
-    	background-color: #DEBEE1;
-    	color:black;
-    } 
-    button:hover{
-    	background-color:red;
-    	color:white;
-    }
+    
+    
     </style>
   </head>
 <body>
-
 
 	<%
 		String user = (String)session.getAttribute("user");
 		String uname = (String)session.getAttribute("username");
 		String pword = (String)session.getAttribute("password");
 		
-		if(user==null || !user.equalsIgnoreCase("admin") || uname.equals("") || pword.equals("")){
+		if(!user.equalsIgnoreCase("user") || uname.equals("") || pword.equals("")){
 			
 			response.sendRedirect("loginFailed.jsp");
 			
 		}
 	
 	%>
-
-
+	
 	<!-- Including the header of the page  -->
 	
 	<jsp:include page="header.jsp"></jsp:include>
 	
-	<jsp:include page="adminMenu.jsp"></jsp:include>
+	<jsp:include page="vendorMenu.jsp"></jsp:include>
 	
 	<div class="clearfix hidden-sm hidden-xs" style="color:white;background-color: green; margin-top:-15px; margin-bottom: 12px"><marquee>Welcome to Tender Management Site</marquee>
  </div> <!--A green color line between header and body part-->
  
      <div class="container-fluid">
      
-     	 <div class="notice">
-        <div class="col-md-3"style="margin-left:2%"> -->
+     	<div class="notice">
+        <div class="col-md-3"style="margin-left:2%">
      		<% Connection con = DBUtil.provideConnection(); %>
      		
-     		 <jsp:include page="notice.jsp"></jsp:include><br>
+     		<jsp:include page="notice.jsp"></jsp:include><br>
      		
           <!-- Next marquee starting-->
-          <jsp:include page="approved.jsp"></jsp:include><br> 
+          <jsp:include page="approved.jsp"></jsp:include><br>
           
         </div>  <!-- End of col-md-3-->
       </div> <!-- End of notice class-->
@@ -99,29 +91,30 @@
       
           
    <div class="col-md-8">
-    
-     <table style="border-radius:10px" >
-			<tr >
-				<td id="show" style="min-width:850px;background-color:white;min-height:0px;color:red">All Assigned Tenders List</td>
-			</tr>
-	</table>
-    
-    
-     <table style="background-color:white; margin-left:30%;">		
-     		<tr style="color:white; font-size:18px; font-weight:bold;background-color:brown"> <td>Tender Id</td> <td>Vendor Id </td> 
-     			<td> Application Id </td> <td>Status</td> </tr>
+    <!-- <div class="marquee" style="border:2px black hidden; background-color:white">
+        <h4 style="background-color:black; margin-top:-1.8px; margin-bottom:1px;padding: 5px; text-align: center;color:red;font-weight:bold">
+        &nbsp; <span id="pagetitle">Admin Account</span></h4>pagetitle id is given here
+        <div class="marquee-content" style="align:center; padding-top:200px;min-height:750px;background-color:cyan">
+     		 -->
+     <table style="background-color:white">		
+     		<tr style="color:red; font-size:22px; font-weight:bold;background-color:green"> <td>Tender Id</td> <td>Tender Name </td> <td> Tender Type </td> <td>Tender Price</td> <td>Location</td> <td>Deadline</td> <td>Description</td> </tr>
      		<%
      			TenderDao dao = new TenderDaoImpl();
-     			List<TenderStatusBean> statusList = dao.getAllAssignedTenders();
-     			
-     			for(TenderStatusBean status : statusList){
+     			List<TenderBean> tenderList = dao.getTenderDetails(request.getParameter("tid"));
+     			for(TenderBean tender : tenderList){
+     				String tid = tender.getId();
+     				String tname = tender.getName();
+     				String ttype = tender.getType();
+     				int tprice = tender.getPrice();
+     				String tloc = tender.getLocation();
+     				java.util.Date udeadline = tender.getDeadline();
+     				java.sql.Date tdeadline = new java.sql.Date(udeadline.getTime()); 
+     				String tdesc = tender.getDesc();
      				
      				%>
      				
      
-     		<tr> <td><a href="viewTenderBidsForm.jsp?tid=<%=status.getTendorId()%>"><%=status.getTendorId() %></a></td> 
-     					<td><a href="adminViewVendorDetail.jsp?vid=<%= status.getVendorId() %>"><%=status.getVendorId() %></a></td> <td><%=status.getBidderId() %></td> 
-     					<td><%=status.getStatus() %></td> </tr>
+     		<tr> <td><%=tid %></td> <td><%=tname %></td> <td><%=ttype %></td> <td><%=tprice %></td> <td><%=tloc %></td> <td><%=tdeadline %></td> <td><%=tdesc %></td> </tr>
      		
      		
      

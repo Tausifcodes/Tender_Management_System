@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@page
-	import="java.sql.*, java.lang.Integer,com.hit.beans.NoticeBean,com.hit.utility.DBUtil,java.util.List,java.util.ArrayList,com.hit.dao.NoticeDaoImpl,com.hit.dao.NoticeDao, javax.servlet.annotation.WebServlet"
+	import="java.sql.*,java.lang.Integer,java.lang.String, com.hit.beans.TenderBean,com.hit.utility.DBUtil,java.util.List,com.hit.dao.TenderDaoImpl,com.hit.dao.TenderDao, javax.servlet.annotation.WebServlet"
 	errorPage="errorpage.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
@@ -29,7 +29,7 @@ th, tr {
 }
 
 td {
-	min-width: 145px;
+	min-width: 115px;
 	border: 2px dashed black;
 }
 
@@ -42,7 +42,7 @@ table {
 	margin: 20px;
 	color: blue;
 	font-style: normal;
-	font-size: 15.5px;
+	font-size: 14px;
 	padding: 20px;
 	cellpadding: 10;
 	cellspacing: 10;
@@ -51,17 +51,6 @@ table {
 tr:hover {
 	background-color: #DEBEE1;
 	color: black;
-}
-
-textarea:hover {
-	background-color: #DEBEE1;
-	color: black;
-}
-
-button:hover {
-	background-color: red;
-	color: white;
-	font-size: bold;
 }
 </style>
 </head>
@@ -121,42 +110,40 @@ button:hover {
         &nbsp; <span id="pagetitle">Admin Account</span></h4>pagetitle id is given here
         <div class="marquee-content" style="align:center; padding-top:200px;min-height:750px;background-color:cyan">
      		 -->
-			<table style="border-radius: 10px">
-				<tr>
-					<td id="show"
-						style="min-width: 850px; color: green; background-color: white">Delete
-						Notices</td>
-				</tr>
-			</table>
-
-
 			<table style="background-color: white">
 				<tr
-					style="color: white; font-size: 22px; font-weight: bold; background-color: #660033">
-					<td>Notice Id</td>
-					<td>Title</td>
+					style="color: white; font-size: 18px; font-weight: bold; background-color: green">
+					<td>Tender Id</td>
+					<td>Name</td>
+					<td>Type</td>
+					<td>Budget</td>
+					<td>Location</td>
+					<td>Deadline</td>
 					<td>Description</td>
-					<td>Remove ?</td>
 				</tr>
 				<%
-				NoticeDao dao = new NoticeDaoImpl();
-				List<NoticeBean> noticeList = dao.viewAllNotice();
-
-				for (NoticeBean notice : noticeList) {
-
-					int noticeId = notice.getNoticeId();
-
-					String noticeTitle = notice.getNoticeTitle();
-
-					String noticeDesc = notice.getNoticeInfo();
+				TenderDao dao = new TenderDaoImpl();
+				List<TenderBean> tenderList = dao.getAllTenders();
+				for (TenderBean tender : tenderList) {
+					String tid = tender.getId();
+					String tname = tender.getName();
+					String ttype = tender.getType();
+					int tprice = tender.getPrice();
+					String tloc = tender.getLocation();
+					java.util.Date udeadline = tender.getDeadline();
+					java.sql.Date tdeadline = new java.sql.Date(udeadline.getTime());
+					String tdesc = tender.getDesc();
 				%>
 
+
 				<tr>
-					<td><%=noticeId%></td>
-					<td><%=noticeTitle%></td>
-					<td cols="70"><%=noticeDesc%></td>
-					<td><a href="RemoveNoticeSrv?noticeid=<%=noticeId%>"><button
-								class="btn btn-danger">Remove</button></a></td>
+					<td><a href="viewTenderBidsForm.jsp?tid=<%=tid%>"><%=tid%></a></td>
+					<td><%=tname%></td>
+					<td><%=ttype%></td>
+					<td>&#8377; <%=tprice%></td>
+					<td><%=tloc%></td>
+					<td><%=tdeadline%></td>
+					<td><textarea rows="3" disabled><%=tdesc%></textarea></td>
 				</tr>
 
 
@@ -165,7 +152,6 @@ button:hover {
 				}
 				%>
 			</table>
-
 
 			<!-- </div>
      </div> -->
